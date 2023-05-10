@@ -1,4 +1,6 @@
 from selenium import webdriver
+from selenium.common import NoSuchElementException, StaleElementReferenceException, ElementNotInteractableException, \
+    ElementClickInterceptedException
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 import time
@@ -8,9 +10,9 @@ import os
 
 # OPENING CHROME AND WEBSITE
 options = Options()
-options.add_argument("--headless=new")
+# options.add_argument("--headless=new")
 driver1 = webdriver.Chrome(options=options)
-#driver1 = webdriver.Chrome('C:/Users/deepa/Downloads/chromedriver_win32/chromedriver.exe')
+driver1 = webdriver.Chrome('C:/Users/erswa/PycharmProjects/pythonProject/chromedriver_win32/chromedriver.exe')
 driver1.get('https://www.naukri.com/')
 driver1.maximize_window()
 print("opening website")
@@ -58,26 +60,22 @@ print('entered search')
 time.sleep(1)
 
 # WE TAKE LINKS FROM NAUKRI.COM AND STORE THEM IN 'LINKS' LIST
-links=[]
-url = driver1.find_elements(By.XPATH, '//*[@class="title ellipsis"]')
+articles=[]
+
+# url = driver1.find_elements(By.XPATH, '//*[@class="title ellipsis"]')
 while(True):
     try:
-            for urls in url[:25]:
-                    temp1 = urls.get_attribute("href")
-                    time.sleep(1)
-                    links.append(temp1)
-                    time.sleep(1)
-                    print(links)
-                    print(len(links))
-                    time.sleep(1)
-            next=driver1.find_element(By.XPATH,'//*[@class="fleft pages"]/a')
-            #driver1.execute_script("arguments[0].click();", next)
-            if (len(links)>25):
-                driver1.execute_script("arguments[0].click();", next)
-            else:
-                break
-    except Exception as ex:
-        print(ex)
-        # continue
+        time.sleep(2)
+        elem = driver1.find_element(By.XPATH, "//a[@class='fright fs14 btn-secondary br2']")
+        urls = driver1.find_elements(By.XPATH, '//*[@class="title ellipsis"]')
+        for url in urls:
+            articles.append(url.get_attribute("href"))
+        print(len(articles))
+        if (len(articles)):
+            elem.click()
+        else:
+            break
+    except(NoSuchElementException, StaleElementReferenceException, ElementNotInteractableException,
+           ElementClickInterceptedException) as ex:
+        print("breaking as there is no next page")
         break
-time.sleep(5)
